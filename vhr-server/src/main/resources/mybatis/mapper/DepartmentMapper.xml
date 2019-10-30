@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shukai.vhrserver.dao.DepartmentDao">
+    <select id="addDep" statementType="CALLABLE">
+        call addDep(#{dep.name,mode=IN,jdbcType=VARCHAR},#{dep.parentId,mode=IN,jdbcType=INTEGER},#{dep.enabled,mode=IN,jdbcType=BOOLEAN},#{dep.result,mode=OUT,jdbcType=INTEGER},#{dep.id,mode=OUT,jdbcType=BIGINT})
+    </select>
+    <select id="deleteDep" statementType="CALLABLE">
+        call deleteDep(#{dep.id,mode=IN,jdbcType=INTEGER},#{dep.result,mode=OUT,jdbcType=INTEGER})
+    </select>
+    <resultMap id="BaseResultMap" type="com.shukai.vhrserver.bean.Department">
+        <id property="id" column="id"/>
+        <result column="name" property="name"/>
+        <result column="parentId" property="parentId"/>
+        <result column="isParent" property="isParent"/>
+        <collection property="children" ofType="com.shukai.vhrserver.bean.Department" select="com.shukai.vhrserver.dao.DepartmentDao.getDepByPid" column="id">
+        </collection>
+    </resultMap>
+    <select id="getDepByPid" parameterType="long" resultMap="BaseResultMap">
+        select * from department where parentId=#{pid} AND enabled=true;
+    </select>
+    <select id="getAllDeps" resultType="com.shukai.vhrserver.bean.Department">
+        select * from department WHERE enabled=true;
+    </select>
+</mapper>
